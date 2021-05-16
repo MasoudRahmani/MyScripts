@@ -12,7 +12,7 @@ I use it in my day to day activity.
 
 1. **One Piece Chapter Easy Translation**
       
-      i dont like their space and marging in their site and also dont link the back ground.😄
+      i dont like their space and marging in their site and also dont like the background color.😄
       
 2. **background Color Changer**
 
