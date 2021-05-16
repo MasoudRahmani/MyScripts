@@ -16,15 +16,15 @@ if (!window.jQuery && typeof($) != 'undefiend') {
     let jq = document.createElement('script');
     jq.type = "text/javascript";
     jq.addEventListener("load", main() );
-    jq.src = "https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.slim.min.js"; //https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js
+    jq.src = "https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js";
     document.getElementsByTagName('head')[0].appendChild(jq);
 } else main();
 
 function main(){
     //jQuery.ready(backColorChanger);
-    if ( ! restricted.find( (x)=> { return where.match(x) != 'undefiend' } ) ){
-        console.log(where + "" + restricted + "");
-        console.log( restricted.find( (x)=> {return x==where} ) );
+    const anythingWrong = restricted.filter( (x)=> { if(where.includes(x)) return x });
+    if (anythingWrong.length == 0){
+        console.log(1);
         window.addEventListener('load',backColorChanger);
     }
 }
