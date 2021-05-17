@@ -55,7 +55,7 @@ function backColorChanger() {
         if (UglyBlack(backColor)) {
             finallColor = pSBC(blendmuch, backColor, '#d4a572');//maker it lighter
         } else {
-            finallColor = pSBC(blendmuch, backColor, '#886085');//maker it darker
+            finallColor = pSBC(blendmuch-1.69, backColor, '#886085');//maker it darker
         }
 
         document.getElementsByTagName('body')[0].style.background = hexToRGB(finallColor, 0.45);
