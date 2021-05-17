@@ -8,25 +8,26 @@
 // @exclude      *://*twitch.tv/*
 // @grant        none
 // ==/UserScript==
-var where = location.href;
+'use strict';
+var where = window.top.location.href;
 var restricted = ['twitch.tv', 'onepiecechapters.com/manga/one-piece'];
 main();
 
 function main() {
     const anythingWrong = restricted.filter((x) => { if (where.includes(x)) return x });
-    if (anythingWrong.length == 0) {
-        if (typeof (window.jQuery) == 'undefiend') {
-            //if self content security is enabled, i cant load
-            // loadjq( () => { /*Not Ready*/
-            //     if(typeof($) == 'undefiend') var $ = window.jQuery;
-            //     $.ready(backColorChanger); });
+    if (anythingWrong.length === 0) {
+        //if self content security is enabled, i cant load
+        if (typeof (window.jQuery) === 'undefined') {
+            loadScript('https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js', load);/*Injecting Script mostly does not work*/
         }
-        window.addEventListener('load', backColorChanger);
+        else load();
     }
 };
-
+function load() {
+    if (document.readyState === "complete") backColorChanger();
+    else window.addEventListener('load', backColorChanger);
+}
 function backColorChanger() {
-    'use strict';
     // Black Site With Content ID
     if (where.search("webtoon") != -1 ||
         where.search("fandom") != -1 ||
@@ -53,9 +54,9 @@ function backColorChanger() {
         let finallColor = '#d4a572';
         let blendmuch = 0.378;
         if (UglyBlack(backColor)) {
-            finallColor = pSBC(blendmuch+0.1, backColor, '#d4a572');//maker it lighter
+            finallColor = pSBC(blendmuch + 0.1, backColor, '#d4a572');//maker it lighter
         } else {
-            finallColor = pSBC(blendmuch-0.13, backColor, '#886085');//maker it darker
+            finallColor = pSBC(blendmuch - 0.13, backColor, '#886085');//maker it darker
         }
         console.log("dominant color log:   " + backColor + " -> " + hexToRGB(finallColor, 0.45));
         document.getElementsByTagName('body')[0].style.background = hexToRGB(finallColor, 0.45);
@@ -121,10 +122,22 @@ const pSBC = (p, c0, c1, l) => {
 }
 
 //https://stackoverflow.com/questions/16230886/trying-to-fire-the-onload-event-on-script-tag
-function loadjq(thencallthis) {
-    let jq = document.createElement('script');
-    jq.type = "text/javascript";
-    if (typeof thencallthis === 'function') jq.addEventListener("load", thencallthis);
-    jq.src = "https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js";
-    document.getElementsByTagName('head')[0].appendChild(jq);
+//https://stackoverflow.com/questions/16839698/jquery-getscript-alternative-in-native-javascript/28002292#28002292
+function loadScript(_url, thencallthis) {
+    let injectPos = document.getElementsByTagName('script')[0];
+    let script = document.createElement('script');
+    script.type = "text/javascript";
+    script.async = 1;
+    script.onload = script.onreadystatechange = function (_, isAbort) {
+        if (isAbort || !script.readyState || /loaded|complete/.test(script.readyState)) {
+            script.onload = script.onreadystatechange = null;
+            script = undefined;
+            if (!isAbort && thencallthis) {
+                if (typeof ($) === 'undefiend') var $ = window.jQuery;
+                setTimeout(thencallthis, 0);
+            }
+        }
+    };
+    script.src = _url;
+    injectPos.parentNode.insertBefore(script, injectPos);
 }
