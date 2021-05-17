@@ -53,13 +53,12 @@ function backColorChanger() {
         let finallColor = '#d4a572';
         let blendmuch = 0.378;
         if (UglyBlack(backColor)) {
-            finallColor = pSBC(blendmuch, backColor, '#d4a572');//maker it lighter
+            finallColor = pSBC(blendmuch+0.1, backColor, '#d4a572');//maker it lighter
         } else {
-            finallColor = pSBC(blendmuch-1.69, backColor, '#886085');//maker it darker
+            finallColor = pSBC(blendmuch-0.13, backColor, '#886085');//maker it darker
         }
-
-        document.getElementsByTagName('body')[0].style.background = hexToRGB(finallColor, 0.45);
         console.log("dominant color log:   " + backColor + " -> " + hexToRGB(finallColor, 0.45));
+        document.getElementsByTagName('body')[0].style.background = hexToRGB(finallColor, 0.45);
     }
 }
 
@@ -69,7 +68,8 @@ function UglyBlack(rgbString) {
     let luma = 0.2126 * color[0] /*Red*/ +
         0.7152 * color[1] /*Green*/ +
         0.0722 * color[2] /*BLUE*/; // per ITU-R BT.709
-    if (luma < 40) {
+    console.log(luma);
+    if (luma < 35) {
         return true;
     }
     else { return false; }
