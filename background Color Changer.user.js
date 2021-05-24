@@ -9,8 +9,14 @@
 // @grant        none
 // ==/UserScript==
 'use strict';
-var where = window.top.location.href;
-var restricted = ['twitch.tv', 'onepiecechapters.com/manga/one-piece'];
+var where = '';
+try {// if we are not in iframe
+    if (window.self !== window.top) where = window.top.location.href;
+} catch (e) {
+    where = 'VeryBadIframe_crossdoamain_GTFO'; // we should not be here
+}
+
+var restricted = ['VeryBadIframe_crossdoamain_GTFO', 'twitch.tv', 'onepiecechapters.com/manga/one-piece', '192.', '127.', 'localhost', 'eset'];
 main();
 
 function main() {
@@ -55,11 +61,13 @@ function backColorChanger() {
         let blendmuch = 0.378;
         if (UglyBlack(backColor)) {
             finallColor = pSBC(blendmuch + 0.1, backColor, '#d4a572');//maker it lighter
+            console.log("dominant color log:   " + backColor + " -> " + hexToRGB(finallColor, 0.45));
+            document.getElementsByTagName('body')[0].style.background = hexToRGB(finallColor, 0.45);
         } else {
-            finallColor = pSBC(blendmuch - 0.13, backColor, '#886085');//maker it darker
+            //finallColor = pSBC(blendmuch - 0.13, backColor, '#886085');//maker it darker
         }
-        console.log("dominant color log:   " + backColor + " -> " + hexToRGB(finallColor, 0.45));
-        document.getElementsByTagName('body')[0].style.background = hexToRGB(finallColor, 0.45);
+        //console.log("dominant color log:   " + backColor + " -> " + hexToRGB(finallColor, 0.45));
+        //document.getElementsByTagName('body')[0].style.background = hexToRGB(finallColor, 0.45);
     }
 }
 
