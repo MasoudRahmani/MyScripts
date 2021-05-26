@@ -11,7 +11,7 @@
 'use strict';
 var where = '';
 try {// if we are not in iframe
-    if (window.self !== window.top) where = window.top.location.href;
+    if (window.self == window.top) where = parent.top.location.href;
 } catch (e) {
     where = 'VeryBadIframe_crossdoamain_GTFO'; // we should not be here
 }
@@ -57,18 +57,24 @@ function backColorChanger() {
         }
     } else {
         let backColor = window.getComputedStyle(document.getElementsByTagName('body')[0]).backgroundColor;
-        let finallColor = '#d4a572';
-        let blendmuch = 0.378;
-        if (UglyBlack(backColor)) {
-            finallColor = pSBC(blendmuch + 0.1, backColor, '#d4a572');//maker it lighter
-            console.log("dominant color log:   " + backColor + " -> " + hexToRGB(finallColor, 0.45));
-            document.getElementsByTagName('body')[0].style.background = hexToRGB(finallColor, 0.45);
-        } else {
-            //finallColor = pSBC(blendmuch - 0.13, backColor, '#886085');//maker it darker
+        if (!isTransparent(backColor)) {// if background is not transparent
+            let finallColor = '#d4a572';
+            let blendmuch = 0.378;
+            if (UglyBlack(backColor)) {
+                finallColor = pSBC(blendmuch + 0.1, backColor, finallColor);//maker it lighter
+                console.log("dominant color log:   " + backColor + " -> " + hexToRGB(finallColor, 0.45));
+                document.getElementsByTagName('body')[0].style.background = hexToRGB(finallColor, 0.45);
+            } else {
+                //finallColor = pSBC(blendmuch - 0.13, backColor, '#886085');//maker it darker
+            }
+            //console.log("dominant color log:   " + backColor + " -> " + hexToRGB(finallColor, 0.45));
+            //document.getElementsByTagName('body')[0].style.background = hexToRGB(finallColor, 0.45);
         }
-        //console.log("dominant color log:   " + backColor + " -> " + hexToRGB(finallColor, 0.45));
-        //document.getElementsByTagName('body')[0].style.background = hexToRGB(finallColor, 0.45);
     }
+}
+function isTransparent(color) {
+    const a = color.replace(/^rgba?\(|\s+|\)$/g, '').split(',');
+    return a[3] == 0 ? true : false;
 }
 
 function UglyBlack(rgbString) {
@@ -78,7 +84,7 @@ function UglyBlack(rgbString) {
         0.7152 * color[1] /*Green*/ +
         0.0722 * color[2] /*BLUE*/; // per ITU-R BT.709
     console.log(luma);
-    if (luma < 35) {
+    if (luma < 30) {
         return true;
     }
     else { return false; }
