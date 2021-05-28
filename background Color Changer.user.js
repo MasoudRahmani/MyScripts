@@ -82,7 +82,7 @@ function hexToRGB(hex, alpha) {
 
 //https://stackoverflow.com/questions/16230886/trying-to-fire-the-onload-event-on-script-tag
 //https://stackoverflow.com/questions/16839698/jquery-getscript-alternative-in-native-javascript/28002292#28002292
-function loadScript(_url, thencallthis) {
+function loadScript(_url, thencallthis, errorcallback) {
     let injectPos = document.getElementsByTagName('script')[0];
     let script = document.createElement('script');
     script.type = "text/javascript";
@@ -97,6 +97,13 @@ function loadScript(_url, thencallthis) {
             }
         }
     };
+    script.onerror = () => {
+        console.log('Error loading: ' + script.src);
+        console.log('FallBack to ErrorCallBack: ' + (typeof errorcallback == 'function'));
+        if (errorcallback) {
+            setTimeout(errorcallback, 0);
+        }
+    }
     script.src = _url;
     injectPos.parentNode.insertBefore(script, injectPos);
 }
@@ -106,7 +113,7 @@ function main() {
     if (anythingWrong.length === 0) {
         //if self content security is enabled, i cant load
         if (typeof (window.jQuery) === 'undefined') {
-            loadScript('https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js', load);/*Injecting Script mostly does not work*/
+            loadScript('https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js', load, load);/*Injecting Script mostly does not work*/
         }
         else load();
     }
