@@ -10,6 +10,16 @@
 // ==/UserScript==
 'use strict';
 var where = '';
+const colors = {
+    darkorange: '#ab7c49',
+    darkblue: '#113078',
+    lightblue: '#6490f5',
+    smoothpurple: '#886085',
+    whitepink: '#f7f1f1',
+    lightpurple: '#c288bd',
+    darkyellow: "#6d5e44"
+}
+
 try {// if we are not in iframe
     if (window.self == window.top) where = parent.top.location.href;
 } catch (e) {
@@ -43,7 +53,6 @@ const pSBC = (p, c0, c1, l) => {
     if (h) return "rgb" + (f ? "a(" : "(") + r + "," + g + "," + b + (f ? "," + m(a * 1000) / 1000 : "") + ")";
     else return "#" + (4294967296 + r * 16777216 + g * 65536 + b * 256 + (f ? m(a * 255) : 0)).toString(16).slice(1, f ? undefined : -2)
 }
-
 function isTransparent(color) {
     const a = color.replace(/^rgba?\(|\s+|\)$/g, '').split(',');
     return a[3] == 0 ? true : false;
@@ -60,7 +69,6 @@ function UglyBlack(rgbString) {
     }
     else { return false; }
 }
-
 function rgbToHex(r, g, b, a) {
     const color = "rbga(" + r + "," + g + "," + b + "," + a + ")";
     const rgba = color.replace(/^rgba?\(|\s+|\)$/g, '').split(',');
@@ -88,11 +96,13 @@ function loadScript(_url, thencallthis, errorcallback) {
     script.type = "text/javascript";
     script.async = 1;
     script.onload = script.onreadystatechange = function (_, isAbort) {
+        const src = script.src;
         if (isAbort || !script.readyState || /loaded|complete/.test(script.readyState)) {
             script.onload = script.onreadystatechange = null;
             script = undefined;
             if (!isAbort && thencallthis) {
                 if (typeof ($) === 'undefiend') var $ = window.jQuery;
+                console.log('Success loading: ' + src);
                 setTimeout(thencallthis, 0);
             }
         }
@@ -112,10 +122,11 @@ function main() {
     const anythingWrong = restricted.filter((x) => { if (where.includes(x)) return x });
     if (anythingWrong.length === 0) {
         //if self content security is enabled, i cant load
-        if (typeof (window.jQuery) === 'undefined') {
-            loadScript('https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js', load, load);/*Injecting Script mostly does not work*/
-        }
-        else load();
+        // if (typeof (window.jQuery) === 'undefined') {
+        //     loadScript('https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js', load, load);/*Injecting Script mostly does not work*/
+        // }
+        // else load();
+        load();
     }
 };
 function load() {
@@ -131,29 +142,30 @@ function backColorChanger() {
         where.search("pluralsight") != -1
     ) {
         let model_one = document.getElementById("content");
-        model_one.style.background = "#886085";//"#f7f1f1";
-        document.querySelectorAll('td').forEach((x) => { x.style.background = '#6d5e44c9'; })
+        model_one.style.background = hexToRGB(colors.darkblue,0.7);
+        document.querySelectorAll('td').forEach((x) => { x.style.background = hexToRGB(colors.darkyellow, 0.79); })
         //model_one.style.color="Black";
+
     }
     // viki.com
     else if (where.search("viki") != -1) {
         //BackGround Color
         let container = document.getElementsByClassName("darkmode");
-        container[0].style.background = "#886085";
+        container[0].style.background = colors.smoothpurple;
         var i = document.getElementsByClassName("card").length;
         for (var j = 0; j < i; j++) {
-            document.getElementsByClassName("card")[j].style.background = "#886085";
-            document.getElementsByClassName("card-content")[j].style.background = "#886085";
+            document.getElementsByClassName("card")[j].style.background = colors.smoothpurple;
+            document.getElementsByClassName("card-content")[j].style.background = colors.smoothpurple;
         }
     } else {
         let backColor = window.getComputedStyle(document.getElementsByTagName('body')[0]).backgroundColor;
         if (!isTransparent(backColor)) {// if background is not transparent
-            let finallColor = '#d4a572';
-            let blendmuch = 0.378;
+            let finallColor = colors.smoothpurple;
+            let blendmuch = 0.7;
             if (UglyBlack(backColor)) {
-                finallColor = pSBC(blendmuch + 0.1, backColor, finallColor);//maker it lighter
-                console.log("dominant color log:   " + backColor + " -> " + hexToRGB(finallColor, 0.45));
-                document.getElementsByTagName('body')[0].style.background = hexToRGB(finallColor, 0.45);
+                finallColor = pSBC(blendmuch, backColor, finallColor);//maker it lighter
+                console.log("dominant color log:   " + backColor + " -> " + hexToRGB(finallColor, 0.85));
+                document.getElementsByTagName('body')[0].style.background = hexToRGB(finallColor, 0.85);
             } else {
                 //finallColor = pSBC(blendmuch - 0.13, backColor, '#886085');//maker it darker
             }
