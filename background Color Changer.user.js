@@ -165,26 +165,33 @@ function backColorChanger() {
     }
     //custom color for all other
 
-
     let backColor = window.getComputedStyle(document.getElementsByTagName('body')[0]).backgroundColor;
-    if (!isTransparent(backColor)) {// if background is not transparent
+    if (!isTransparent(backColor)) {// if background is not transparent //need to check if background is an image or not?
         let finallColor = colors.whitegray;
         let blendmuch = 0.7;
         if (UglyBlack(backColor)) {
             finallColor = pSBC(blendmuch, backColor, finallColor);//maker it lighter
             console.log("dominant color log:   " + backColor + " -> " + hexToRGB(finallColor, 0.85));
             document.getElementsByTagName('body')[0].style.background = hexToRGB(finallColor, 0.85);
+            checkTextColor();
         } else {
             //finallColor = pSBC(blendmuch - 0.13, backColor, '#886085');//maker it darker
+            //document.getElementsByTagName('body')[0].style.background = hexToRGB(finallColor, 0.45);
         }
-        //console.log("dominant color log:   " + backColor + " -> " + hexToRGB(finallColor, 0.45));
-        //document.getElementsByTagName('body')[0].style.background = hexToRGB(finallColor, 0.45);
-
-        if (where.search("pornhub") != -1) {
-            let links = document.querySelectorAll('span.title a');
-            for (let counter = 0; counter < links.length; counter++) {
-                links[counter].style.color = colors.darkblue;//"Black";
-            }
+    }
+}
+//************ Font Color to match whiteish background **************//
+function checkTextColor() {
+    if (where.search("pornhub") != -1) {
+        let links = document.querySelectorAll('span.title a');
+        for (let counter = 0; counter < links.length; counter++) {
+            links[counter].style.color = colors.darkblue;
+        }
+    }
+    if (where.search("xvideos") != -1) {
+        let links = document.querySelectorAll('p.title a');
+        for (let counter = 0; counter < links.length; counter++) {
+            links[counter].style.color = colors.darkblue;
         }
     }
 }
