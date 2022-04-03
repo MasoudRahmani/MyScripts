@@ -15,9 +15,10 @@ const colors = {
     darkblue: '#113078',
     lightblue: '#6490f5',
     smoothpurple: '#886085',
-    whitepink: '#f7f1f1',
+    whitegray: '#f2f2f2',
     lightpurple: '#c288bd',
-    darkyellow: "#6d5e44"
+    darkyellow: "#6d5e44",
+    blueaccent: '#006cb0' //need white font
 }
 
 try {// if we are not in iframe
@@ -135,42 +136,55 @@ function load() {
 }
 
 function backColorChanger() {
-    // Black Site With Content ID
+    //exception
+    if (where.search("onepiece.fandom.com") != -1) { return; }
+
+    //custom color for Black Site With Content ID
     if (where.search("webtoon") != -1 ||
         where.search("fandom") != -1 ||
         where.search("encyclopediadramatica.wiki") != -1 ||
         where.search("pluralsight") != -1
     ) {
         let model_one = document.getElementById("content");
-        model_one.style.background = hexToRGB(colors.darkblue,0.7);
+        model_one.style.background = hexToRGB(colors.darkblue, 0.7);
         document.querySelectorAll('td').forEach((x) => { x.style.background = hexToRGB(colors.darkyellow, 0.79); })
         //model_one.style.color="Black";
-
+        return;
     }
-    // viki.com
-    else if (where.search("viki") != -1) {
+    //custom color for viki.com
+    if (where.search("viki") != -1) {
         //BackGround Color
         let container = document.getElementsByClassName("darkmode");
         container[0].style.background = colors.smoothpurple;
-        var i = document.getElementsByClassName("card").length;
-        for (var j = 0; j < i; j++) {
-            document.getElementsByClassName("card")[j].style.background = colors.smoothpurple;
-            document.getElementsByClassName("card-content")[j].style.background = colors.smoothpurple;
+        let len = document.getElementsByClassName("card").length;
+        for (let jcnt = 0; jcnt < len; jcnt++) {
+            document.getElementsByClassName("card")[jcnt].style.background = colors.smoothpurple;
+            document.getElementsByClassName("card-content")[jcnt].style.background = colors.smoothpurple;
         }
-    } else {
-        let backColor = window.getComputedStyle(document.getElementsByTagName('body')[0]).backgroundColor;
-        if (!isTransparent(backColor)) {// if background is not transparent
-            let finallColor = colors.smoothpurple;
-            let blendmuch = 0.7;
-            if (UglyBlack(backColor)) {
-                finallColor = pSBC(blendmuch, backColor, finallColor);//maker it lighter
-                console.log("dominant color log:   " + backColor + " -> " + hexToRGB(finallColor, 0.85));
-                document.getElementsByTagName('body')[0].style.background = hexToRGB(finallColor, 0.85);
-            } else {
-                //finallColor = pSBC(blendmuch - 0.13, backColor, '#886085');//maker it darker
+        return;
+    }
+    //custom color for all other
+
+
+    let backColor = window.getComputedStyle(document.getElementsByTagName('body')[0]).backgroundColor;
+    if (!isTransparent(backColor)) {// if background is not transparent
+        let finallColor = colors.whitegray;
+        let blendmuch = 0.7;
+        if (UglyBlack(backColor)) {
+            finallColor = pSBC(blendmuch, backColor, finallColor);//maker it lighter
+            console.log("dominant color log:   " + backColor + " -> " + hexToRGB(finallColor, 0.85));
+            document.getElementsByTagName('body')[0].style.background = hexToRGB(finallColor, 0.85);
+        } else {
+            //finallColor = pSBC(blendmuch - 0.13, backColor, '#886085');//maker it darker
+        }
+        //console.log("dominant color log:   " + backColor + " -> " + hexToRGB(finallColor, 0.45));
+        //document.getElementsByTagName('body')[0].style.background = hexToRGB(finallColor, 0.45);
+
+        if (where.search("pornhub") != -1) {
+            let links = document.querySelectorAll('span.title a');
+            for (let counter = 0; counter < links.length; counter++) {
+                links[counter].style.color = colors.darkblue;//"Black";
             }
-            //console.log("dominant color log:   " + backColor + " -> " + hexToRGB(finallColor, 0.45));
-            //document.getElementsByTagName('body')[0].style.background = hexToRGB(finallColor, 0.45);
         }
     }
 }
