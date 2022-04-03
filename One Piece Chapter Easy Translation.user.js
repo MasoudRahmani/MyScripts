@@ -98,7 +98,7 @@ function load() {
 function main() {
 
     let page = jQuery(".container");
-    jQuery(".img_container").css("margin", "25pt 0pt 25pt 0pt");
+    jQuery("picture").css("margin", "25pt 0pt 25pt 0pt");
     page.css("padding", "0pt 15pt 0pt 10pt");
     page.css("background", "#6b82739c");
 
@@ -109,7 +109,7 @@ function main() {
 
 function BackgroundMagic() {
     //find picture color and set background a bit darker
-    let allimage = jQuery(".img_container");
+    let allimage = jQuery("picture");
     let allnewimage = new Array(allimage.length);
 
     for (let i = 0; i <= 16; i++) {
