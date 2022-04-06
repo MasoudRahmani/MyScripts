@@ -10,7 +10,7 @@
 // @grant        none
 // ==/UserScript==
 'use strict';
-var where = '';
+var where = parent.top.location.href;
 const colors = {
     darkorange: '#ab7c49',
     darkblue: '#113078',
@@ -21,7 +21,7 @@ const colors = {
     darkyellow: "#6d5e44",
     blueaccent: '#006cb0' //need white font
 }
-var restricted = ['VeryBadIframe_crossdoamain_GTFO', 'twitch.tv', 'onepiecechapters.com/manga/one-piece', 'eset'];
+var restricted = ['VeryBadIframe_crossdoamain_GTFO', 'twitch.tv', 'eset'];
 
 // if we are not in iframe // @noframes does the same, faster and better
 /*try { if (window.self == window.top) where = parent.top.location.href; } catch (e) { where = 'VeryBadIframe_crossdoamain_GTFO'; } */
@@ -44,10 +44,11 @@ function UglyBlack(rgbString) {
 
 /* ----------- ***----------------- */
 function main() {
-    if (localStorage.BCC_RestrictedSites === undefined)
-        localStorage.setItem("BCC_RestrictedSites", restricted);
+    //if (localStorage.BCC_RestrictedSites === undefined)
+      //  localStorage.setItem("BCC_RestrictedSites", restricted);
 
-    const anythingWrong = localStorage.BCC_RestrictedSites.split(",").filter((x) => { if (where.includes(x)) { console.log(`Background Changer exited bc this site "${x}" is restricted`); return x; } });
+    //const anythingWrong = localStorage.BCC_RestrictedSites.split(",").filter((x) => { if (where.includes(x)) { console.log(`Background Changer exited bc this site "${x}" is restricted`); return x; } });
+    const anythingWrong = restricted.filter((x) => { if (where.includes(x)) { console.log(`Background Changer exited bc this site "${x}" is restricted`); return x; } });
     if (anythingWrong.length > 0) return;
     else backColorChanger();
 };
@@ -55,7 +56,7 @@ function main() {
 function backColorChanger() {
     console.log("Background Color Changer called");
     var bodyBackground = window.getComputedStyle(document.getElementsByTagName('body')[0]);
-    if (validURL(bodyBackground.backgroundImage.slice(5, -2)) == true) return; //Image is the background
+    if (validURL(bodyBackground.backgroundImage.slice(5, -2)) == true) {console.log("Image Background, script stopped");return;} //Image is the background
 
     //custom color for Black Site With Content ID
     if (where.search("webtoon") != -1 ||
