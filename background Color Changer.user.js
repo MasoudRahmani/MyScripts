@@ -1,11 +1,12 @@
 // ==UserScript==
 // @name         background Color Changer
 // @namespace    http://tampermonkey.net/
-// @version      5.0
+// @version      6.0
 // @description  Change Background Color to borderline sick
 // @author       You
 // @match        *://*/*
-// @exclude      *://*twitch.tv/*
+// @run-at       document-end
+// @noframes
 // @grant        none
 // ==/UserScript==
 'use strict';
@@ -20,15 +21,126 @@ const colors = {
     darkyellow: "#6d5e44",
     blueaccent: '#006cb0' //need white font
 }
+var restricted = ['VeryBadIframe_crossdoamain_GTFO', 'twitch.tv', 'onepiecechapters.com/manga/one-piece', 'eset'];
 
-try {// if we are not in iframe
-    if (window.self == window.top) where = parent.top.location.href;
-} catch (e) {
-    where = 'VeryBadIframe_crossdoamain_GTFO'; // we should not be here
+// if we are not in iframe // @noframes does the same, faster and better
+/*try { if (window.self == window.top) where = parent.top.location.href; } catch (e) { where = 'VeryBadIframe_crossdoamain_GTFO'; } */
+
+function isTransparent(color) {
+    const a = color.replace(/^rgba?\(|\s+|\)$/g, '').split(',');
+    return a[3] == 0 ? true : false;
 }
-var restricted = ['VeryBadIframe_crossdoamain_GTFO', 'twitch.tv', 'onepiecechapters.com/manga/one-piece', '192.', '127.', 'localhost', 'eset'];
+//https://stackoverflow.com/questions/12043187/how-to-check-if-hex-color-is-too-black
+function UglyBlack(rgbString) {
+    let color = rgbString.replace(/^rgba?\(|\s+|\)$/g, '').split(',');
+    let luma = 0.2126 * color[0] /*Red*/ +
+        0.7152 * color[1] /*Green*/ +
+        0.0722 * color[2] /*BLUE*/; // per ITU-R BT.709
+    if (luma < 30) {
+        return true;
+    }
+    else { return false; }
+}
+
+/* ----------- ***----------------- */
+function main() {
+    if (localStorage.BCC_RestrictedSites === undefined)
+        localStorage.setItem("BCC_RestrictedSites", restricted);
+
+    const anythingWrong = localStorage.BCC_RestrictedSites.split(",").filter((x) => { if (where.includes(x)) { console.log(`Background Changer exited bc this site "${x}" is restricted`); return x; } });
+    if (anythingWrong.length > 0) return;
+    else backColorChanger();
+};
+
+function backColorChanger() {
+    console.log("Background Color Changer called");
+    var bodyBackground = window.getComputedStyle(document.getElementsByTagName('body')[0]);
+    if (validURL(bodyBackground.backgroundImage.slice(5, -2)) == true) return; //Image is the background
+
+    //custom color for Black Site With Content ID
+    if (where.search("webtoon") != -1 ||
+        where.search("fandom") != -1 ||
+        where.search("encyclopediadramatica.wiki") != -1 ||
+        where.search("pluralsight") != -1
+    ) {
+        let model_one = document.getElementById("content");
+        model_one.style.background = hexToRGB(colors.darkblue, 0.7);
+        document.querySelectorAll('td').forEach((x) => { x.style.background = hexToRGB(colors.darkyellow, 0.79); })
+        //model_one.style.color="Black";
+        return;
+    }
+    //custom color for viki.com
+    if (where.search("viki") != -1) {
+        let container = document.getElementsByClassName("darkmode");
+        container[0].style.background = colors.smoothpurple;
+        let len = document.getElementsByClassName("card").length;
+        for (let jcnt = 0; jcnt < len; jcnt++) {
+            document.getElementsByClassName("card")[jcnt].style.background = colors.smoothpurple;
+            document.getElementsByClassName("card-content")[jcnt].style.background = colors.smoothpurple;
+        }
+        return;
+    }
+    //custom color for all other
+
+    let backColor = bodyBackground.backgroundColor;
+    console.log(` ${backColor} Ugly Black? ${UglyBlack(backColor)}`);
+    if (!isTransparent(backColor)) {// if background is not transparent
+        let finallColor = colors.whitegray;
+        let blendmuch = 0.7;
+        if (UglyBlack(backColor)) {
+            finallColor = pSBC(blendmuch, backColor, finallColor);
+            console.log("dominant color log:   " + backColor + " -> " + hexToRGB(finallColor, 0.85));
+            document.getElementsByTagName('body')[0].style.background = hexToRGB(finallColor, 0.85);
+            checkTextColor();
+        }
+    }
+}
+//************ Font Color to match whiteish background **************//
+function checkTextColor() {
+    if (where.search("pornhub") != -1) {
+        let links = document.querySelectorAll('span.title a');
+        for (let counter = 0; counter < links.length; counter++) {
+            links[counter].style.color = colors.darkblue;
+        }
+    }
+    if (where.search("xvideos") != -1) {
+        let links = document.querySelectorAll('p.title a');
+        for (let counter = 0; counter < links.length; counter++) {
+            links[counter].style.color = colors.darkblue;
+        }
+    }
+}
+//************ Url Check **************//
+function validURL(str) {
+    var pattern = new RegExp('^(https?:\\/\\/)?' + // protocol
+        '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|' + // domain name
+        '((\\d{1,3}\\.){3}\\d{1,3}))' + // OR ip (v4) address
+        '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*' + // port and path
+        '(\\?[;&a-z\\d%_.~+=-]*)?' + // query string
+        '(\\#[-a-z\\d_]*)?$', 'i'); // fragment locator
+    return !!pattern.test(str);
+}
+//************ Color representation **************//
+function rgbToHex(r, g, b, a) {
+    const color = "rbga(" + r + "," + g + "," + b + "," + a + ")";
+    const rgba = color.replace(/^rgba?\(|\s+|\)$/g, '').split(',');
+    const hex = `#${((1 << 24) + (parseInt(rgba[0]) << 16) + (parseInt(rgba[1]) << 8) + parseInt(rgba[2])).toString(16).slice(1)}`;
+
+    return hex;
+}
+function hexToRGB(hex, alpha) {
+    var r = parseInt(hex.slice(1, 3), 16),
+        g = parseInt(hex.slice(3, 5), 16),
+        b = parseInt(hex.slice(5, 7), 16);
+
+    if (alpha) {
+        return "rgba(" + r + ", " + g + ", " + b + ", " + alpha + ")";
+    } else {
+        return "rgb(" + r + ", " + g + ", " + b + ")";
+    }
+}
+//************ Blender **************//
 //https://stackoverflow.com/questions/5560248/programmatically-lighten-or-darken-a-hex-color-or-rgb-and-blend-colors
-// Version 4.0
 const pSBC = (p, c0, c1, l) => {
     let r, g, b, P, f, t, h, i = parseInt, m = Math.round, a = typeof (c1) == "string";
     if (typeof (p) != "number" || p < -1 || p > 1 || typeof (c0) != "string" || (c0[0] != 'r' && c0[0] != '#') || (c1 && !a)) return null;
@@ -54,146 +166,8 @@ const pSBC = (p, c0, c1, l) => {
     if (h) return "rgb" + (f ? "a(" : "(") + r + "," + g + "," + b + (f ? "," + m(a * 1000) / 1000 : "") + ")";
     else return "#" + (4294967296 + r * 16777216 + g * 65536 + b * 256 + (f ? m(a * 255) : 0)).toString(16).slice(1, f ? undefined : -2)
 }
-function isTransparent(color) {
-    const a = color.replace(/^rgba?\(|\s+|\)$/g, '').split(',');
-    return a[3] == 0 ? true : false;
-}
-function UglyBlack(rgbString) {
-    //https://stackoverflow.com/questions/12043187/how-to-check-if-hex-color-is-too-black
-    let color = rgbString.replace(/^rgba?\(|\s+|\)$/g, '').split(',');
-    let luma = 0.2126 * color[0] /*Red*/ +
-        0.7152 * color[1] /*Green*/ +
-        0.0722 * color[2] /*BLUE*/; // per ITU-R BT.709
-    console.log(luma);
-    if (luma < 30) {
-        return true;
-    }
-    else { return false; }
-}
-function rgbToHex(r, g, b, a) {
-    const color = "rbga(" + r + "," + g + "," + b + "," + a + ")";
-    const rgba = color.replace(/^rgba?\(|\s+|\)$/g, '').split(',');
-    const hex = `#${((1 << 24) + (parseInt(rgba[0]) << 16) + (parseInt(rgba[1]) << 8) + parseInt(rgba[2])).toString(16).slice(1)}`;
 
-    return hex;
-}
-function hexToRGB(hex, alpha) {
-    var r = parseInt(hex.slice(1, 3), 16),
-        g = parseInt(hex.slice(3, 5), 16),
-        b = parseInt(hex.slice(5, 7), 16);
 
-    if (alpha) {
-        return "rgba(" + r + ", " + g + ", " + b + ", " + alpha + ")";
-    } else {
-        return "rgb(" + r + ", " + g + ", " + b + ")";
-    }
-}
-
-//https://stackoverflow.com/questions/16230886/trying-to-fire-the-onload-event-on-script-tag
-//https://stackoverflow.com/questions/16839698/jquery-getscript-alternative-in-native-javascript/28002292#28002292
-function loadScript(_url, thencallthis, errorcallback) {
-    let injectPos = document.getElementsByTagName('script')[0];
-    let script = document.createElement('script');
-    script.type = "text/javascript";
-    script.async = 1;
-    script.onload = script.onreadystatechange = function (_, isAbort) {
-        const src = script.src;
-        if (isAbort || !script.readyState || /loaded|complete/.test(script.readyState)) {
-            script.onload = script.onreadystatechange = null;
-            script = undefined;
-            if (!isAbort && thencallthis) {
-                if (typeof ($) === 'undefiend') var $ = window.jQuery;
-                console.log('Success loading: ' + src);
-                setTimeout(thencallthis, 0);
-            }
-        }
-    };
-    script.onerror = () => {
-        console.log('Error loading: ' + script.src);
-        console.log('FallBack to ErrorCallBack: ' + (typeof errorcallback == 'function'));
-        if (errorcallback) {
-            setTimeout(errorcallback, 0);
-        }
-    }
-    script.src = _url;
-    injectPos.parentNode.insertBefore(script, injectPos);
-}
-/* ----------- ***----------------- */
-function main() {
-    const anythingWrong = restricted.filter((x) => { if (where.includes(x)) return x });
-    if (anythingWrong.length === 0) {
-        //if self content security is enabled, i cant load
-        // if (typeof (window.jQuery) === 'undefined') {
-        //     loadScript('https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js', load, load);/*Injecting Script mostly does not work*/
-        // }
-        // else load();
-        load();
-    }
-};
-function load() {
-    if (document.readyState === "complete") backColorChanger();
-    else window.addEventListener('load', backColorChanger);
-}
-
-function backColorChanger() {
-    //exception
-    if (where.search("onepiece.fandom.com") != -1) { return; }
-
-    //custom color for Black Site With Content ID
-    if (where.search("webtoon") != -1 ||
-        where.search("fandom") != -1 ||
-        where.search("encyclopediadramatica.wiki") != -1 ||
-        where.search("pluralsight") != -1
-    ) {
-        let model_one = document.getElementById("content");
-        model_one.style.background = hexToRGB(colors.darkblue, 0.7);
-        document.querySelectorAll('td').forEach((x) => { x.style.background = hexToRGB(colors.darkyellow, 0.79); })
-        //model_one.style.color="Black";
-        return;
-    }
-    //custom color for viki.com
-    if (where.search("viki") != -1) {
-        //BackGround Color
-        let container = document.getElementsByClassName("darkmode");
-        container[0].style.background = colors.smoothpurple;
-        let len = document.getElementsByClassName("card").length;
-        for (let jcnt = 0; jcnt < len; jcnt++) {
-            document.getElementsByClassName("card")[jcnt].style.background = colors.smoothpurple;
-            document.getElementsByClassName("card-content")[jcnt].style.background = colors.smoothpurple;
-        }
-        return;
-    }
-    //custom color for all other
-
-    let backColor = window.getComputedStyle(document.getElementsByTagName('body')[0]).backgroundColor;
-    if (!isTransparent(backColor)) {// if background is not transparent //need to check if background is an image or not?
-        let finallColor = colors.whitegray;
-        let blendmuch = 0.7;
-        if (UglyBlack(backColor)) {
-            finallColor = pSBC(blendmuch, backColor, finallColor);//maker it lighter
-            console.log("dominant color log:   " + backColor + " -> " + hexToRGB(finallColor, 0.85));
-            document.getElementsByTagName('body')[0].style.background = hexToRGB(finallColor, 0.85);
-            checkTextColor();
-        } else {
-            //finallColor = pSBC(blendmuch - 0.13, backColor, '#886085');//maker it darker
-            //document.getElementsByTagName('body')[0].style.background = hexToRGB(finallColor, 0.45);
-        }
-    }
-}
-//************ Font Color to match whiteish background **************//
-function checkTextColor() {
-    if (where.search("pornhub") != -1) {
-        let links = document.querySelectorAll('span.title a');
-        for (let counter = 0; counter < links.length; counter++) {
-            links[counter].style.color = colors.darkblue;
-        }
-    }
-    if (where.search("xvideos") != -1) {
-        let links = document.querySelectorAll('p.title a');
-        for (let counter = 0; counter < links.length; counter++) {
-            links[counter].style.color = colors.darkblue;
-        }
-    }
-}
 
 main();
+
