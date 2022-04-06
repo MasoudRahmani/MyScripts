@@ -5,6 +5,10 @@
 // @description  Eye Candy
 // @author       Punsher2011
 // @match        https://onepiecechapters.com/*
+// @require      https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js
+// @require      https://cdnjs.cloudflare.com/ajax/libs/color-thief/2.3.0/color-thief.umd.js
+// @run-at       document-end
+// @noframes
 // @grant        none
 // ==/UserScript==
 'use strict';
@@ -70,31 +74,6 @@ function UglyBlack(color) {
     else { return false; }
 }
 
-//https://stackoverflow.com/questions/16230886/trying-to-fire-the-onload-event-on-script-tag
-//https://stackoverflow.com/questions/16839698/jquery-getscript-alternative-in-native-javascript/28002292#28002292
-function loadScript(_url, thencallthis) {
-    let injectPos = document.getElementsByTagName('script')[0];
-    let script = document.createElement('script');
-    script.type = "text/javascript";
-    script.async = 1;
-    script.onload = script.onreadystatechange = function (_, isAbort) {
-        if (isAbort || !script.readyState || /loaded|complete/.test(script.readyState)) {
-            script.onload = script.onreadystatechange = null;
-            script = undefined;
-            if (!isAbort && thencallthis) {
-                if (typeof ($) === 'undefiend') var $ = window.jQuery;
-                setTimeout(thencallthis, 0);
-            }
-        }
-    };
-    script.src = _url;
-    injectPos.parentNode.insertBefore(script, injectPos);
-}
-
-function load() {
-    if (document.readyState === "complete") main();
-    else window.addEventListener('load', main);
-}
 function main() {
 
     let page = jQuery(".container");
@@ -102,9 +81,7 @@ function main() {
     page.css("padding", "0pt 15pt 0pt 10pt");
     page.css("background", "#6b82739c");
 
-    /*Get The dominant color for background*/ //https://github.com/lokesh/color-thief
-    jQuery.getScript("https://cdnjs.cloudflare.com/ajax/libs/color-thief/2.3.0/color-thief.umd.js", () => { BackgroundMagic() })
-        .done((script, status) => { console.log("Loading Color Thief was:" + status) });
+    BackgroundMagic();
 }
 
 function BackgroundMagic() {
@@ -112,7 +89,7 @@ function BackgroundMagic() {
     let allimage = jQuery("picture");
     let allnewimage = new Array(allimage.length);
 
-    for (let i = 0; i <= 16; i++) {
+    for (let i = 0; i <= allimage.length; i++) {
         //cross origin problem
         const img = allimage[i].getElementsByTagName("img")[0];
         allnewimage[i] = new Image();
@@ -144,9 +121,4 @@ function SetBackColor(srcimg, srcParent) {
     console.log(srcimg.src + ":   " + dominantColor + " -> " + hexToRGB(domColorHex, 0.45));
 }
 
-
-//if self content security is enabled, i cant load
-if (typeof (window.jQuery) === 'undefined') {
-    loadScript('https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js', load);/*Injecting Script mostly does not work*/
-}
-else load();
+main();
