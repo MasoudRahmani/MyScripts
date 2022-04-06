@@ -1,10 +1,10 @@
 // ==UserScript==
 // @name         One Piece Chapter Easy Translation
 // @namespace    http://tampermonkey.net/
-// @version      2.1
+// @version      2.4
 // @description  Eye Candy
 // @author       Punsher2011
-// @match        https://onepiecechapters.com/*
+// @match        https://onepiecechapters.com/chapters/*
 // @require      https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js
 // @require      https://cdnjs.cloudflare.com/ajax/libs/color-thief/2.3.0/color-thief.umd.js
 // @run-at       document-end
@@ -89,7 +89,7 @@ function BackgroundMagic() {
     let allimage = jQuery("picture");
     let allnewimage = new Array(allimage.length);
 
-    for (let i = 0; i <= allimage.length; i++) {
+    for (let i = 0; i < allimage.length; i++) {
         //cross origin problem
         const img = allimage[i].getElementsByTagName("img")[0];
         allnewimage[i] = new Image();
