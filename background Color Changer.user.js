@@ -10,6 +10,7 @@
 // @grant        none
 // ==/UserScript==
 'use strict';
+
 var where = parent.top.location.href;
 const colors = {
     darkorange: '#ab7c49',
