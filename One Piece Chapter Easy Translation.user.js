@@ -5,18 +5,95 @@
 // @description  Eye Candy
 // @author       Punsher2011
 // @match        https://onepiecechapters.com/chapters/*
+// @match        https://tcbscans.com/chapters/*
+// @match        https://tcb.abhayaby.com/*
+// @match        https://tcb-backup.bihar-mirchi.com/*
 // @require      https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js
-// @require      https://cdnjs.cloudflare.com/ajax/libs/color-thief/2.3.0/color-thief.umd.js
 // @run-at       document-end
 // @noframes
 // @grant        none
 // ==/UserScript==
 'use strict';
+
+let jQr = jQuery;
+
+function main() {
+    jQr("picture").css("margin", "20pt 0pt 20pt 0pt");
+
+    jQr("main")[0].style="background-color: #a8bfbe; background-image:  radial-gradient(#618a7b 0.8px, transparent 0.8px), radial-gradient(#618a7b 0.8px, #a8bfbe 0.8px); background-size: 32px 32px; background-position: 0 0,16px 16px;"
+    //opacity: 0.9;
+console.log("One piece easy eye was added!");
+    //indivisual image color change is shit
+    //BackgroundMagic();
+}
+
+var chkReadyState = setInterval(function() {
+    if (document.readyState == "complete") {
+        // clear the interval
+        clearInterval(chkReadyState);
+        main();
+    }
+}, 100);
+
+
+
 /*In order to bypass cors policy problem we need a proxy which can be set up locally via */
 //https://github.com/Rob--W/cors-anywhere
 var Cors_ProxY = "http://localhost:8080/";
+/*
+function SetBackColor(srcimg, srcParent) {
+    // @require      https://cdnjs.cloudflare.com/ajax/libs/color-thief/2.3.0/color-thief.umd.js
+    let colorThief = new ColorThief();
+    let dominantColor = "#6b82739c";
+    let blendMuch = 0.378;
 
+    dominantColor = colorThief.getColor(srcimg);
+    let domColorHex = rgbToHex(dominantColor[0], dominantColor[1], dominantColor[2]);
+    if (IsTooBlack(dominantColor)) {
+        domColorHex = pSBC(blendMuch, domColorHex, '#f0a5ea');//maker it lighter
+    } else {
+        domColorHex = pSBC(blendMuch, domColorHex, '#886085');//maker it darker
+    }
+
+    srcParent.style.background = hexToRGB(domColorHex, 0.45);
+    console.log(srcimg.src + ":   " + dominantColor + " -> " + hexToRGB(domColorHex, 0.45));
+}
+*/
 //https://stackoverflow.com/questions/5560248/programmatically-lighten-or-darken-a-hex-color-or-rgb-and-blend-colors
+
+
+function BackgroundMagic() {
+    //find picture color and set background a bit darker
+    let allimage = jQr("picture");
+    let allnewimage = new Array(allimage.length);
+
+    for (let i = 0; i < allimage.length; i++) {
+        //cross origin problem
+        const img = allimage[i].getElementsByTagName("img")[0];
+        allnewimage[i] = new Image();
+        allnewimage[i].src = Cors_ProxY + img.src;
+        allnewimage[i].crossOrigin = 'Anonymous';
+
+        // Make sure image is finished loading
+        if (allnewimage[i].complete) {
+            SetBackColor(allnewimage[i], allimage[i])
+        } else {
+            allnewimage[i].addEventListener('load', () => { SetBackColor(allnewimage[i], allimage[i]); });
+        }
+    }
+}
+//https://stackoverflow.com/questions/12043187/how-to-check-if-hex-color-is-too-black
+function IsTooBlack(color) {
+    //let color = rgbString.replace(/^rgba?\(|\s+|\)$/g, '').split(',');
+    let luma = 0.2126 * color[0] /*Red*/ +
+        0.7152 * color[1] /*Green*/ +
+        0.0722 * color[2] /*BLUE*/; // per ITU-R BT.709
+    if (luma < 40) {
+        return true;
+    }
+    else { return false; }
+}
+
 // Version 4.0
 const pSBC = (p, c0, c1, l) => {
     let r, g, b, P, f, t, h, i = parseInt, m = Math.round, a = typeof (c1) == "string";
@@ -62,63 +139,4 @@ function hexToRGB(hex, alpha) {
         return "rgb(" + r + ", " + g + ", " + b + ")";
     }
 }
-//https://stackoverflow.com/questions/12043187/how-to-check-if-hex-color-is-too-black
-function UglyBlack(color) {
-    //let color = rgbString.replace(/^rgba?\(|\s+|\)$/g, '').split(',');
-    let luma = 0.2126 * color[0] /*Red*/ +
-        0.7152 * color[1] /*Green*/ +
-        0.0722 * color[2] /*BLUE*/; // per ITU-R BT.709
-    if (luma < 40) {
-        return true;
-    }
-    else { return false; }
-}
 
-function main() {
-
-    let page = jQuery(".container");
-    jQuery("picture").css("margin", "25pt 0pt 25pt 0pt");
-    page.css("padding", "0pt 15pt 0pt 10pt");
-    page.css("background", "#6b82739c");
-
-    BackgroundMagic();
-}
-
-function BackgroundMagic() {
-    //find picture color and set background a bit darker
-    let allimage = jQuery("picture");
-    let allnewimage = new Array(allimage.length);
-
-    for (let i = 0; i < allimage.length; i++) {
-        //cross origin problem
-        const img = allimage[i].getElementsByTagName("img")[0];
-        allnewimage[i] = new Image();
-        allnewimage[i].src = Cors_ProxY + img.src;
-        allnewimage[i].crossOrigin = 'Anonymous';
-
-        // Make sure image is finished loading
-        if (allnewimage[i].complete) {
-            SetBackColor(allnewimage[i], allimage[i])
-        } else {
-            allnewimage[i].addEventListener('load', () => { SetBackColor(allnewimage[i], allimage[i]); });
-        }
-    }
-}
-function SetBackColor(srcimg, srcParent) {
-    let colorThief = new ColorThief();
-    let dominantColor = "#6b82739c";
-    let blendMuch = 0.378;
-
-    dominantColor = colorThief.getColor(srcimg);
-    let domColorHex = rgbToHex(dominantColor[0], dominantColor[1], dominantColor[2]);
-    if (UglyBlack(dominantColor)) {
-        domColorHex = pSBC(blendMuch, domColorHex, '#f0a5ea');//maker it lighter
-    } else {
-        domColorHex = pSBC(blendMuch, domColorHex, '#886085');//maker it darker
-    }
-
-    srcParent.style.background = hexToRGB(domColorHex, 0.45);
-    console.log(srcimg.src + ":   " + dominantColor + " -> " + hexToRGB(domColorHex, 0.45));
-}
-
-main();
