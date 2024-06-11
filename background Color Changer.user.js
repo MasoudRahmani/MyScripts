@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name         background Color Changer
+// @name         background Colour Changer
 // @namespace    http://tampermonkey.net/
 // @version      6.0
 // @description  Change Background Color to borderline sick
@@ -60,9 +60,8 @@ function backColorChanger() {
 
     //custom color for Black Site With Content ID
     if (where.search("webtoon") != -1 ||
-        where.search("fandom") != -1 ||
-        where.search("encyclopediadramatica.wiki") != -1 ||
-        where.search("pluralsight") != -1
+        where.search("encyclopediadramatica.wiki") != -1
+        //where.search("pluralsight") != -1
     ) {
         let model_one = document.getElementById("content");
         model_one.style.background = hexToRGB(colors.darkblue, 0.7);
