@@ -7,7 +7,8 @@
 // @match        https://mm-scans.org/manga/*
 // @match        https://void-scans.com/1/eleceed*
 // @match        https://eleceed.me/comic/*
-// @match        https://hivetoon.com/1/*
+// @match        https://hivetoon.com/*
+// @match        https://hivecomic.com/series/eleceed/*
 // @require      https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js
 // @run-at       document-end
 // @noframes
@@ -15,20 +16,19 @@
 // ==/UserScript==
 'use strict';
 
-let jQr = jQuery;
+let jq = $();
 var where = parent.top.location.href;
 
 function main() {
-    if (where.search("hivescans") != -1) {
-        jQr("#readerarea")[0].style = "background-color: #a8bfbe; background-image:  radial-gradient(#618a7b 0.8px, transparent 0.8px), radial-gradient(#618a7b 0.8px, #a8bfbe 0.8px); background-size: 32px 32px; background-position: 0 0,16px 16px;"
-            jQr("#readerarea p").css("margin", "20px 0px");
+    if (where.search("hivetoon") != -1 || where.search("hive") != -1) {
+        let h = document.getElementsByClassName("min-h-screen")[0];
+        h.style = "background-color: #a8bfbe; background-image:  radial-gradient(#618a7b 0.8px, transparent 0.8px), radial-gradient(#618a7b 0.8px, #a8bfbe 0.8px); background-size: 32px 32px; background-position: 0 0,16px 16px;";
+       jQuery("section.w-full.flex.flex-col.justify-center.items-center div").css("margin", "10px 0px");
     } else if (where.search("eleceed.me") != -1) {
-        jQr("img").css("margin", "20px 0px");
-        jQr(".entry-inner")[0].style = "background-color: #a8bfbe; background-image:  radial-gradient(#618a7b 0.8px, transparent 0.8px), radial-gradient(#618a7b 0.8px, #a8bfbe 0.8px); background-size: 32px 32px; background-position: 0 0,16px 16px;"
+        jQuery("img").css("margin", "20px 0px");
+        jQuery(".entry-inner")[0].style = "background-color: #a8bfbe; background-image:  radial-gradient(#618a7b 0.8px, transparent 0.8px), radial-gradient(#618a7b 0.8px, #a8bfbe 0.8px); background-size: 32px 32px; background-position: 0 0,16px 16px;"
     } else {
-
-        jQr(".c-blog-post .entry-content .entry-content_wrap .read-container img").css("margin", "20px 0px");
-        jQr(".content-area")[0].style = "background-color: #a8bfbe; background-image:  radial-gradient(#618a7b 0.8px, transparent 0.8px), radial-gradient(#618a7b 0.8px, #a8bfbe 0.8px); background-size: 32px 32px; background-position: 0 0,16px 16px;"
+        console.log("Not a valid site");
     }
     console.log("Eleceed easy eye was added!");
 
