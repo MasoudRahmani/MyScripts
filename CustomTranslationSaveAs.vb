@@ -36,12 +36,17 @@ Sub CustomTranslationSaveAs()
             save = True
         End If
     Next
-    
-    MsgBox ("Save: " + CStr(save) + vbCrLf + vbCrLf + "Path:" + IIf((save), filename, " No Valid Name "))
-    
+        
     If save Then
-    ActiveDocument.SaveAs filename:=filename, FileFormat:=wdFormatDocumentDefault
+        If fs.FileExists(filename + ".docx") Then
+            MsgBox "Not saving: File already exists at target location."
+            save = False
+        End If
     End If
+
+    MsgBox ("Save: " + CStr(save) + vbCrLf + vbCrLf + "Path:" + IIf((save), filename, " No Valid Name "))
+    If save Then
+        ActiveDocument.SaveAs filename:=filename, FileFormat:=wdFormatDocumentDefault
+    End If
+
 End Sub
-
-
