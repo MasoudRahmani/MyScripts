@@ -99,7 +99,6 @@ GOTO status
 echo --------------------------------------------------------------
 echo 						Finished
 set /p Command=repeat (Y/n): 
-if %Command% EQU n (goto exit) else (
-(goto start) )
+if %Command% NEQ n (goto start)
 pause
 
