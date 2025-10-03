@@ -20,14 +20,14 @@ let jQr = jQuery;
 function main() {
     jQr("picture").css("margin", "20pt 0pt 20pt 0pt");
 
-    jQr("main")[0].style="background-color: #a8bfbe; background-image:  radial-gradient(#618a7b 0.8px, transparent 0.8px), radial-gradient(#618a7b 0.8px, #a8bfbe 0.8px); background-size: 32px 32px; background-position: 0 0,16px 16px;"
+    jQr("main")[0].style = "background-color: #a8bfbe; background-image:  radial-gradient(#618a7b 0.8px, transparent 0.8px), radial-gradient(#618a7b 0.8px, #a8bfbe 0.8px); background-size: 32px 32px; background-position: 0 0,16px 16px;"
     //opacity: 0.9;
-console.log("One piece easy eye was added!");
+    console.log("One piece easy eye was added!");
     //indivisual image color change is shit
     //BackgroundMagic();
 }
 
-var chkReadyState = setInterval(function() {
+var chkReadyState = setInterval(function () {
     if (document.readyState == "complete") {
         // clear the interval
         clearInterval(chkReadyState);

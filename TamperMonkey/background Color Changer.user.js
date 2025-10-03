@@ -29,8 +29,8 @@ const colors = {
 var restricted = ['VeryBadIframe_crossdoamain_GTFO', 'twitch.tv', 'eset'];
 
 var mstyles = [
-    {id:1, sites:['webtoon','encyclopediadramatica.wiki']},//pluralsight
-    {id:2, sites:['viki']},
+    { id: 1, sites: ['webtoon', 'encyclopediadramatica.wiki'] },//pluralsight
+    { id: 2, sites: ['viki'] },
 ]
 
 // if we are not in iframe // @noframes does the same, faster and better
@@ -46,11 +46,11 @@ function main() {
 function backColorChanger() {
     console.log("Background Color Changer called");
     var bodyBackground = window.getComputedStyle(document.getElementsByTagName('body')[0]);
-    if (validURL(bodyBackground.backgroundImage.slice(5, -2)) == true) {console.log("Image Background, script stopped");return;} //Image is the background
+    if (validURL(bodyBackground.backgroundImage.slice(5, -2)) == true) { console.log("Image Background, script stopped"); return; } //Image is the background
 
     //custom color for Black Site With Content ID
-    if (mstyles[0].sites.some(x=> {return where.includes(x);})
-       ) {
+    if (mstyles[0].sites.some(x => { return where.includes(x); })
+    ) {
         let model_one = document.getElementById("content");
         model_one.style.background = hexToRGB(colors.darkblue, 0.7);
         document.querySelectorAll('td').forEach((x) => { x.style.background = hexToRGB(colors.darkyellow, 0.79); })
@@ -59,7 +59,7 @@ function backColorChanger() {
     }
 
     //custom color for viki
-    if (mstyles[1].sites.some(x=> {return where.includes(x);})) {
+    if (mstyles[1].sites.some(x => { return where.includes(x); })) {
         let container = document.getElementsByClassName("darkmode");
         container[0].style.background = colors.smoothpurple;
         let len = document.getElementsByClassName("card").length;
@@ -87,9 +87,8 @@ function backColorChanger() {
 
 
     let disqus = document.getElementById("disqus_thread");
-    if(disqus !== null)
-    {
-        disqus.style.background="cadetBlue";
+    if (disqus !== null) {
+        disqus.style.background = "cadetBlue";
     }
 
 }
@@ -103,11 +102,11 @@ function CheckTextColor() {
         }
         let cards = document.getElementsByClassName("videos underplayer-thumbs");
         for (let x of cards) {
-            console.log(x.style=`background: ${colors.somegray};`)
+            console.log(x.style = `background: ${colors.somegray};`)
         }
 
         document.getElementsByClassName('title-container')[0].style.background = colors.darkgray;
-        document.getElementsByClassName('video-wrapper')[0].style.background = hexToRGB(colors.darkgray,0.7);
+        document.getElementsByClassName('video-wrapper')[0].style.background = hexToRGB(colors.darkgray, 0.7);
     }
     // if (where.search("xvideos") != -1) {
     //     let links = document.querySelectorAll('p.title a');
@@ -135,11 +134,11 @@ function UglyBlack(rgbString) {
 //************ Url Check **************//
 function validURL(str) {
     var pattern = new RegExp('^(https?:\\/\\/)?' + // protocol
-                             '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|' + // domain name
-                             '((\\d{1,3}\\.){3}\\d{1,3}))' + // OR ip (v4) address
-                             '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*' + // port and path
-                             '(\\?[;&a-z\\d%_.~+=-]*)?' + // query string
-                             '(\\#[-a-z\\d_]*)?$', 'i'); // fragment locator
+        '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|' + // domain name
+        '((\\d{1,3}\\.){3}\\d{1,3}))' + // OR ip (v4) address
+        '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*' + // port and path
+        '(\\?[;&a-z\\d%_.~+=-]*)?' + // query string
+        '(\\#[-a-z\\d_]*)?$', 'i'); // fragment locator
     return !!pattern.test(str);
 }
 //************ Color representation **************//
